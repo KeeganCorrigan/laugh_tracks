@@ -1,0 +1,15 @@
+<% @comedians.each do |comedian| %>
+<ul>
+  <li><%= comedian.name %></li>
+  <li><%= comedian.age %></li>
+  <li> specials:
+      <% Special.where(comedian_id: comedian.id).each do |special| %>
+        <%= special.name + " | "%>
+      <% end %>
+  </li>
+  <li id="special-count"> special count:
+    <%= Special.where(comedian_id: comedian.id).count %>
+  </li>
+</ul>
+<% end %>
+<p id="average-age"> average age: <%= @average_age %></p>
