@@ -1,59 +1,55 @@
 RSpec.describe 'a visitor' do
-  context 'visiting /comedians' do
-    it 'should see a list of comedians' do
-      Comedian.create(name: "Iliza Shlesinger", age: 34)
+  context 'visits /comedians' do
+    it 'sees a list of comedians' do
+      comic_1 = Comedian.create(name: "bias",  age: 32)
+      comic_2 = Comedian.create(name: "blimey",  age: 40)
 
       visit '/comedians'
 
-      within("ul") do
-        expect(page).to have_content("Iliza Shlesinger")
-        expect(page).to have_content("34")
-      end
+      expect(page).to have_content(comic_1.name)
+      expect(page).to have_content("Age: #{comic_2.age}")
     end
-    it 'should see a list of comedians specials' do
-      iliza = Comedian.create(name: "Iliza Shlesinger", age: 34)
-      Special.create(name: "War Paint", comedian_id: iliza.id)
-      Special.create(name: "Freezing Hot", comedian_id: iliza.id)
-      Special.create(name: "Confirmed Kills", comedian_id: iliza.id)
+    it 'sees a list of comedians specials' do
+      comic_1 = Comedian.create(name: "bias",  age: 32)
+      special_1 = comic_1.specials.create(name: "fake special")
+      special_2 = comic_1.specials.create(name: "fake special 2")
 
       visit '/comedians'
 
-      within("ul") do
-        expect(page).to have_content("War Paint")
-      end
+      expect(page).to have_content(special_1.name)
+      expect(page).to have_content(special_2.name)
     end
-    it 'should see the number of specials for that comedian' do
-      iliza = Comedian.create(name: "Iliza Shlesinger", age: 34)
-      Special.create(name: "War Paint", comedian_id: iliza.id)
-      Special.create(name: "Freezing Hot", comedian_id: iliza.id)
-      Special.create(name: "Confirmed Kills", comedian_id: iliza.id)
+    it 'sees the average age of all comedians' do
+      comic_1 = Comedian.create(name: "bias",  age: 32)
+      comic_2 = Comedian.create(name: "bads",  age: 40)
+      expected = 36
 
       visit '/comedians'
 
-      within("#special-count") do
-        expect(page).to have_content("3")
-      end
+      expect(page).to have_content("Average age: #{expected}")
     end
-    it 'should see a list of comedians average age' do
-      iliza = Comedian.create(name: "Iliza Shlesinger", age: 34)
-      barry = Comedian.create(name: "Billy Shlesinger", age: 30)
+    it 'sees comedians by age provided in query' do
+      comic_1 = Comedian.create(name: "bias",  age: 32)
+      comic_2 = Comedian.create(name: "bads",  age: 40)
+
+      visit '/comedians?age=32'
+
+      expect(page).to have_content(comic_1.name)
+      expect(page).not_to have_content(comic_2.name)
+    end
+    it 'sees a count of specials for each comedian' do
+      comic_1 = Comedian.create(name: "bias",  age: 32)
+      special_1 = comic_1.specials.create(name: "fake special")
+      special_2 = comic_1.specials.create(name: "fake special 2")
+      expected = 2
 
       visit '/comedians'
 
-      within("#average-age") do
-        expect(page).to have_content("32")
-      end
+      expect(page).to have_content("Specials count: #{expected}")
     end
-    # it 'should be able to query for age and see comedians by age'
-    #   iliza = Comedian.create(name: "Iliza Shlesinger", age: 34)
-    #   barry = Comedian.create(name: "Billy Shlesinger", age: 30)
-    #
-    #   visit '/comedians?age=34'
-    #
-    #   within("ul")
-    #     expect(page).to have_content("Iliza Shlesinger")
-    #     expect(page).to_not have_content("Billy Shlesinger")
-    #   end
-    # end
   end
 end
+
+# As a visitor,
+# When I visit `/comedians`
+# Then I also see the count of specials for each comedian.
